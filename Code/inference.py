@@ -1,6 +1,8 @@
 import mysql.connector
 import torch
 import cv2
+from PyQt5.QtCore import QTimer
+
 from config import DefaultConfig
 from models.mobilenetv3 import MobileNetV3_Small
 from torchvision import transforms
@@ -74,19 +76,31 @@ class RecycleApp(QMainWindow):
         self.conn.commit()
 
         if count % 5 == 0:
+            print(f"条件触发：回收次数 = {count}")
             self.showRewardAnimation()
+        else:
+            print(f"条件未触发：回收次数 = {count}")
 
     def showRewardAnimation(self):
         """显示奖励动画"""
-        rewardWindow = QLabel()
-        rewardWindow.setWindowTitle("奖励动画")
-        rewardWindow.setGeometry(300, 300, 400, 300)
+        # 使用实例变量存储窗口，防止被垃圾回收
+        self.rewardWindow = QLabel()
+        self.rewardWindow.setWindowTitle("恭喜你回收了五次垃圾，成功助力环保！")
+        self.rewardWindow.setGeometry(620, 620, 620, 620)
 
-        movie = QMovie("reward_animation.gif")  # 奖励动画文件路径
-        rewardWindow.setMovie(movie)
+        movie = QMovie("reward_animation.gif")
+        if not movie.isValid():
+            print("奖励动画文件无效或路径错误")
+            return
+
+        print("奖励动画文件有效，启动播放")
+        self.rewardWindow.setMovie(movie)
         movie.start()
 
-        rewardWindow.show()
+        # 设置动画窗口关闭时间
+        QTimer.singleShot(5000, self.rewardWindow.close)  # 5 秒后自动关闭窗口
+        self.rewardWindow.show()
+        print("奖励动画窗口已显示")
 
     def handleLogin(self):
         """处理登录"""
