@@ -182,18 +182,26 @@ class RecycleApp(QMainWindow):
         user = self.cursor.fetchone()
         return user is not None
 
-    def updateRecycleCount(self, username):
-        """更新用户回收次数，并检查是否需要触发奖励动画"""
-        self.cursor.execute("SELECT recycle_count FROM users WHERE username = %s", (username,))
+    def recordRecycleLog(self, username, file_path, is_recyclable):
+        """记录垃圾分类日志"""
+        self.cursor.execute(
+            "INSERT INTO recyclable_logs (username, file_path, is_recyclable) VALUES (%s, %s, %s)",
+            (username, file_path, is_recyclable)
+        )
+        self.conn.commit()
+        print("分类日志已记录")
+    def updateRecyclableCount(self, username):
+        """更新用户可回收垃圾次数并检查奖励条件"""
+        self.cursor.execute("SELECT recyclable_count FROM users WHERE username = %s", (username,))
         count = self.cursor.fetchone()[0] + 1
-        self.cursor.execute("UPDATE users SET recycle_count = %s WHERE username = %s", (count, username))
+        self.cursor.execute("UPDATE users SET recyclable_count = %s WHERE username = %s", (count, username))
         self.conn.commit()
 
         if count % 5 == 0:
-            print(f"条件触发：回收次数 = {count}")
+            print(f"可回收垃圾奖励触发：可回收垃圾次数 = {count}")
             self.showRewardAnimation()
         else:
-            print(f"条件未触发：回收次数 = {count}")
+            print(f"奖励未触发：可回收垃圾次数 = {count}")
 
     def showRewardAnimation(self):
         """显示奖励动画"""
@@ -257,8 +265,15 @@ class RecycleApp(QMainWindow):
         print(f"分类结果: {result}, 分组: {group}")
         self.resultLabel.setText(f"分类结果: {result}, 分组: {group}")
 
-        # 更新回收次数
-        self.updateRecycleCount(username)
+        # 判断是否为可回收垃圾
+        is_recyclable = (group.lower() == "recyclables")
+
+        # 更新数据库
+        self.recordRecycleLog(username, file_path, is_recyclable)
+
+        # 如果是可回收垃圾，更新用户的可回收垃圾次数
+        if is_recyclable:
+            self.updateRecyclableCount(username)
 
     def inferImage(self, cvImg):
         """推理图片分类"""
@@ -288,6 +303,7 @@ def cvImgToTensor(cvImg):
         image.unsqueeze_(0)
 
     return image
+
 
 
 # 加载模型
