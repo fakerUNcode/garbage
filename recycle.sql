@@ -1,26 +1,3 @@
-# 目标检测-垃圾分类
-
-基于open-cv的垃圾分类检测，detect.py中有三种目标检测方法（KNN、MOG2、GrabCut）各有特点，适用于不同场景。
-
-选择建议：
-
-​	•	**实时视频监控场景**：优先使用 KNN 或 MOG2。
-
-​	•	KNN 更适合背景动态变化明显的场景。
-
-​	•	MOG2 更适合背景稍复杂但稳定性较高的场景。
-
-​	•	**静态图像或单帧视频处理**：使用 GrabCut，获得高质量的目标分割效果。
-
-​	•	**动态摄像头中前景提取**：根据实际情况选择 KNN 或 MOG2，结合形态学操作提升精度。
-
-基于项目：[Garbage-Classifiction](https://github.com/guanqr/Garbage-Classification.git)
-
-添加了用户数据服务和GUI，用户可登录并上传图片，如果成功上传五次可回收物则奖励用户奖励动画。
-
-建表参考sql：
-
-```sql
 /*
  Navicat Premium Data Transfer
 
@@ -94,47 +71,3 @@ INSERT INTO `users` (`id`, `username`, `password`, `recycle_count`, `recyclable_
 COMMIT;
 
 SET FOREIGN_KEY_CHECKS = 1;
-```
-
-### 运行前向传播测试
-
-运行 `inference.py` 可测试先前传播。修改 `config.py` 中 `DefaultConfig.InferWithGPU` 参数即可切换前向传播使用 GPU 还是 CPU。对 `inference.py` 文件稍加修改即可对自己的图片进行分类。
-
-## 训练环境
-
-- 训练设备 Apple MacbookPro M1pro (Apple Sillion CPU-only)
-
-- python版本
-
-  ```python
-   python --version
-   Python 3.9.13
-  ```
-
-  
-
-- pytorch版本：
-
-  ```python
-   pip install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cpu
-  ```
-
-- Open-cv
-
-  ```python
-  pip install opencv-python
-  ```
-
-- tensorboard
-
-  ```python
-  pip install tensorboard
-  ```
-
-- Mysql-connector
-
-  ```python
-  pip install mysql-connector-python
-  ```
-
-  
