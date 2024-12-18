@@ -14,7 +14,7 @@
 
 ​	•	**动态摄像头中前景提取**：根据实际情况选择 KNN 或 MOG2，结合形态学操作提升精度。
 
-基于项目：[Garbage-Classifiction](https://github.com/guanqr/Garbage-Classification.git)
+
 
 添加了用户数据服务和GUI，用户可登录并上传图片，如果成功上传五次可回收物则奖励用户奖励动画。
 
